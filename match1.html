@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشاهدة البث المباشر - Ballon TV Live</title>
-
-    <!-- Tailwind CSS (كما هو) -->
+    <title>بث مباشر احترافي مع إعلانات - Ballon TV Live</title>
+    
+    <!-- 1. مكتبات التصميم (CSS) -->
+    <!-- Tailwind CSS للتنسيق العام -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     
-    <!-- !! الخطوة 1: استدعاء مكتبة JW Player !! -->
-    <!-- !! غيّر هذا الرابط بالرابط الذي نسخته من حسابك !! -->
-    <script src="https://cdn.jwplayer.com/libraries/YOUR_UNIQUE_KEY_HERE.js"></script>
+    <!-- Video.js CSS الأساسي -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+
+    <!-- CSS لشكل (Skin) احترافي - اخترنا "City" لمظهره الجميل -->
+    <link href="https://unpkg.com/@videojs/themes@1/dist/city/index.css" rel="stylesheet">
+
+    <!-- CSS الخاص بإضافة الإعلانات (Google IMA) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/videojs-ima/2.1.0/videojs.ima.css" rel="stylesheet">
 
     <style>
-        body {
-            background-color: #1a202c;
-        }
-        /* تصميم الحاوية للمشغل ليكون احترافياً */
-        .player-container {
-            max-width: 900px; /* للتحكم في عرض المشغل */
-            margin: 0 auto; /* لتوسيطه */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); /* ظل جميل */
+        body { background-color: #1a202c; }
+        .player-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 0.75rem;
+            overflow: hidden; /* ضروري لجعل الحواف الدائرية تعمل */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); /* ظل احترافي */
         }
     </style>
 </head>
@@ -29,22 +34,25 @@
     <div class="container mx-auto px-4 py-8">
         
         <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white">
-                مشاهدة البث المباشر
-            </h1>
-            <p class="text-gray-400 mt-2">beIN Sports 1 HD</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-white">شاهد المباراة مباشرة</h1>
+            <p class="text-gray-400 mt-2">جودة عالية مع دعم الإعلانات</p>
         </header>
 
-        <main>
-            <!-- !! الخطوة 2: هذا هو المكان الذي سيظهر فيه المشغل !! -->
-            <div class="player-container">
-                <div id="myplayer">جاري تحميل المشغل...</div>
-            </div>
-            
-            <p class="text-center text-yellow-400 mt-4">
-                قد يستغرق البث بضع ثوانٍ ليبدأ.
-            </p>
-        </main>
+        <div class="player-wrapper">
+            <!-- 2. عنصر الفيديو. لاحظ إضافة الكلاس الخاص بالشكل 'vjs-theme-city' -->
+            <video
+                id="my-player"
+                class="video-js vjs-theme-city vjs-big-play-centered"
+                controls
+                preload="auto"
+                width="100%">
+                <!-- !! غيّر رابط البث هنا إذا أردت !! -->
+                <source src="https://stream.ayas.ir/hls2/bein1.m3u8" type="application/x-mpegURL">
+                <p class="vjs-no-js">
+                    لمشاهدة هذا الفيديو، يرجى تفعيل JavaScript.
+                </p>
+            </video>
+        </div>
 
         <div class="text-center mt-8">
             <a href="index.html" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded transition duration-300">
@@ -53,21 +61,46 @@
         </div>
     </div>
 
-    <!-- !! الخطوة 3: كود JavaScript لتشغيل JW Player !! -->
-    <script>
-        // إعداد مشغل JW Player
-        const player = jwplayer("myplayer").setup({
-            // ضع رابط البث الخاص بك هنا
-            "file": "https://stream.ayas.ir/hls2/bein1.m3u8",
-            
-            // لجعل المشغل متجاوباً مع حجم الشاشة
-            "width": "100%",
-            "aspectratio": "16:9",
+    <!-- 3. مكتبات الـ JavaScript (مهم جداً ترتيبها بهذا الشكل) -->
+    
+    <!-- مكتبة Video.js الأساسية -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 
-            // محاولة التشغيل التلقائي (قد تمنعه بعض المتصفحات)
-            "autostart": true,
-            "mute": true // التشغيل التلقائي يعمل بشكل أفضل مع كتم الصوت
-        });
+    <!-- مكتبة Google IMA SDK (يجب أن تكون قبل إضافة الإعلانات) -->
+    <script src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+
+    <!-- إضافة الإعلانات لـ Video.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-ima/2.1.0/videojs.ima.js"></script>
+
+    <!-- 4. كود التهيئة والتشغيل -->
+    <script>
+        // إعدادات المشغل
+        var playerOptions = {
+            controls: true,
+            autoplay: 'muted', // أفضل طريقة لضمان التشغيل التلقائي
+            fluid: true, // يجعل المشغل متجاوباً
+            liveui: true, // يحسّن واجهة البث المباشر
+            playbackRates: [0.5, 1, 1.5, 2], // خيارات سرعة التشغيل
+            controlBar: {
+                pictureInPictureToggle: true // تفعيل زر صورة-داخل-صورة
+            }
+        };
+
+        // تهيئة المشغل
+        var player = videojs('my-player', playerOptions);
+
+        // =======================================================
+        //   !! إعدادات الإعلانات - الجزء الأهم للربح !!
+        // =======================================================
+        var imaOptions = {
+            id: 'my-player',
+            // !! هام: استبدل هذا الرابط برابط VAST Tag من شبكتك الإعلانية !!
+            adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator='
+        };
+
+        // تفعيل إضافة الإعلانات
+        player.ima(imaOptions);
+
     </script>
     
 </body>
