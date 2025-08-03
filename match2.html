@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- غيّر العنوان ليعكس المباراة (اختياري) -->
+    <title>مشاهدة البث المباشر - Ballon TV Live</title>
+
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- !! الخطوة 1: استدعاء مكتبة HLS.js !! -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <style>
+        body {
+            background-color: #1a202c;
+        }
+        /* تعديل بسيط لجعل الفيديو يتوسط الصفحة بشكل أفضل */
+        .video-wrapper {
+            max-width: 900px; /* يمكنك التحكم في أقصى عرض للمشغل */
+            margin: 0 auto;
+            background-color: #000;
+            border-radius: 0.5rem; /* لجعل الحواف دائرية */
+            overflow: hidden; /* لإخفاء أي زوائد */
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container mx-auto px-4 py-8">
+        
+        <!-- يمكنك تغيير عنوان المباراة هنا إذا أردت -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white">
+                مشاهدة البث المباشر
+            </h1>
+            <p class="text-gray-400 mt-2">beIN Sports 1 HD</p>
+        </header>
+
+        <!-- حاوية مشغل الفيديو -->
+        <main>
+            <div class="video-wrapper shadow-xl">
+                <!-- !! الخطوة 2: وضع وسم <video> بدلاً من <iframe> !! -->
+                <!-- أعطيناه id="video" لنتحكم به عبر الجافاسكريبت -->
+                <video id="video" controls></video>
+            </div>
+            
+            <p class="text-center text-yellow-400 mt-4">
+                إذا لم يبدأ البث تلقائياً، اضغط على زر التشغيل.
+            </p>
+        </main>
+
+        <!-- زر العودة للصفحة الرئيسية -->
+        <div class="text-center mt-8">
+            <a href="index.html" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded transition duration-300">
+                ← العودة للرئيسية
+            </a>
+        </div>
+    </div>
+
+    <!-- !! الخطوة 3: كود JavaScript لتشغيل رابط m3u8 !! -->
+    <script>
+        // نختار عنصر الفيديو الذي وضعناه في الأعلى
+        var video = document.getElementById('video');
+        
+        // رابط البث الذي أعطيتني إياه
+        var videoSrc = 'https://stream.ayas.ir/hls2/bein1.m3u8';
+
+        // نتأكد أن المتصفح يدعم HLS.js
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play(); // محاولة تشغيل الفيديو تلقائياً بعد التحميل
+            });
+        } 
+        // إذا كان المتصفح يدعم m3u8 مباشرة (مثل سفاري على آيفون)
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
+        }
+    </script>
+    
+</body>
+</html>
