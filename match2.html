@@ -3,91 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- غيّر العنوان ليعكس المباراة (اختياري) -->
-    <title>مشاهدة البث المباشر - Ballon TV Live</title>
+    <title>بث مباشر: ريال مدريد ضد برشلونة (سيرفرات متعددة) - Ballon TV Live</title>
 
-    <!-- Tailwind CSS -->
+    <!-- ... (روابط الخطوط والأيقونات كما هي) ... -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    
-    <!-- !! الخطوة 1: استدعاء مكتبة HLS.js !! -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <link href="https://unpkg.com/@videojs/themes@1/dist/forest/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
+    <!-- الأنماط المخصصة (مع إضافة أنماط للأزرار الجديدة) -->
     <style>
-        body {
-            background-color: #1a202c;
+        body { background-color: #111827; font-family: 'Cairo', sans-serif; color: #E5E7EB; }
+        .player-area { position: relative; background-size: cover; background-position: center; border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; background-image: url('https://i.imgur.com/8i2B5zS.jpg'); }
+        .player-area::before { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-color: rgba(17, 24, 39, 0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 1rem; z-index: 1; }
+        .player-content { position: relative; z-index: 2; }
+        .video-js.vjs-theme-forest { border-radius: 0.75rem; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        
+        /* تصميم أزرار السيرفرات */
+        .server-btn {
+            background-color: #374151; /* رمادي */
+            transition: all 0.2s ease-in-out;
         }
-        /* تعديل بسيط لجعل الفيديو يتوسط الصفحة بشكل أفضل */
-        .video-wrapper {
-            max-width: 900px; /* يمكنك التحكم في أقصى عرض للمشغل */
-            margin: 0 auto;
-            background-color: #000;
-            border-radius: 0.5rem; /* لجعل الحواف دائرية */
-            overflow: hidden; /* لإخفاء أي زوائد */
+        .server-btn:hover {
+            background-color: #4b5563;
         }
-        video {
-            width: 100%;
-            height: auto;
+        .server-btn.active-server {
+            background-color: #16a34a; /* أخضر للسيرفر النشط */
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(22, 163, 74, 0.5);
         }
     </style>
 </head>
-<body>
-    
-    <div class="container mx-auto px-4 py-8">
-        
-        <!-- يمكنك تغيير عنوان المباراة هنا إذا أردت -->
-        <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white">
-                مشاهدة البث المباشر
-            </h1>
-            <p class="text-gray-400 mt-2">beIN Sports 1 HD</p>
-        </header>
+<body class="antialiased">
 
-        <!-- حاوية مشغل الفيديو -->
-        <main>
-            <div class="video-wrapper shadow-xl">
-                <!-- !! الخطوة 2: وضع وسم <video> بدلاً من <iframe> !! -->
-                <!-- أعطيناه id="video" لنتحكم به عبر الجافاسكريبت -->
-                <video id="video" controls></video>
+    <!-- ... (قسم الإعلانات العلوية كما هو) ... -->
+
+    <div class="container mx-auto px-4">
+        <!-- منطقة المشغل الرئيسية -->
+        <div class="player-area">
+            <div class="player-content">
+                <!-- ... (عنوان المباراة كما هو) ... -->
+                <div class="match-details mb-4 text-center">
+                    <h1 class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">ريال مدريد ضد برشلونة</h1>
+                    <p class="text-lg text-yellow-400 font-bold mt-1">الدوري الإسباني - الجولة 10</p>
+                </div>
+
+                <!-- المشغل (مهم: أزلنا وسم <source> من هنا) -->
+                <video id="ballon-player" class="video-js vjs-theme-forest vjs-big-play-centered" controls preload="auto" width="16" height="9"></video>
+                <div id="status-message" class="text-center text-yellow-400 font-bold mt-2"></div>
             </div>
-            
-            <p class="text-center text-yellow-400 mt-4">
-                إذا لم يبدأ البث تلقائياً، اضغط على زر التشغيل.
-            </p>
-        </main>
-
-        <!-- زر العودة للصفحة الرئيسية -->
-        <div class="text-center mt-8">
-            <a href="index.html" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded transition duration-300">
-                ← العودة للرئيسية
-            </a>
         </div>
+
+        <!-- أزرار التحكم والسيرفرات (تم التحديث) -->
+        <div class="controls-bar flex flex-col md:flex-row justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg mb-8">
+            <!-- حاوية أزرار السيرفرات -->
+            <div id="server-buttons" class="flex flex-wrap gap-2 mb-4 md:mb-0">
+                <!-- سيتم إضافة الأزرار هنا عبر JavaScript -->
+            </div>
+            <div class="actions">
+                <button id="share-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300">
+                    <i class="fas fa-share-alt mr-2"></i> مشاركة البث
+                </button>
+            </div>
+        </div>
+
+        <!-- ... (بقية الصفحة: إعلانات، معلومات، زر العودة) ... -->
     </div>
-
-    <!-- !! الخطوة 3: كود JavaScript لتشغيل رابط m3u8 !! -->
+    
+    <!-- مكتبات JavaScript -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script>
-        // نختار عنصر الفيديو الذي وضعناه في الأعلى
-        var video = document.getElementById('video');
-        
-        // رابط البث الذي أعطيتني إياه
-        var videoSrc = 'https://stream.ayas.ir/hls2/bein1.m3u8';
+    document.addEventListener('DOMContentLoaded', function() {
 
-        // نتأكد أن المتصفح يدعم HLS.js
-        if (Hls.isSupported()) {
-            var hls = new Hls();
-            hls.loadSource(videoSrc);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play(); // محاولة تشغيل الفيديو تلقائياً بعد التحميل
-            });
-        } 
-        // إذا كان المتصفح يدعم m3u8 مباشرة (مثل سفاري على آيفون)
-        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = videoSrc;
-            video.addEventListener('loadedmetadata', function() {
-                video.play();
+        // =================================================================
+        // !! الخطوة 1: أضف روابط السيرفرات الخاصة بك هنا !!
+        // =================================================================
+        const servers = [
+            { name: "السيرفر 1 (رئيسي)", src: "https://windnew.newkso.ru/wind/premium49/mono.m3u8" },
+            { name: "السيرفر 2 (احتياطي)", src: "https://stream.ayas.ir/hls2/bein1.m3u8" },
+            { name: "السيرفر 3 (اختياري)", src: "رابط-سيرفر-ثالث-هنا.m3u8" },
+            // يمكنك إضافة المزيد من السيرفرات بنفس الشكل
+        ];
+
+        let currentServerIndex = 0;
+        const player = videojs('ballon-player', {
+            autoplay: 'muted',
+            fluid: true,
+            liveui: true,
+        });
+        
+        const serverButtonsContainer = document.getElementById('server-buttons');
+        const statusMessage = document.getElementById('status-message');
+
+        // دالة لتبديل السيرفر
+        function switchServer(index) {
+            if (index >= servers.length) index = 0; // عُد إلى السيرفر الأول إذا انتهت القائمة
+            
+            currentServerIndex = index;
+            const server = servers[currentServerIndex];
+            
+            // تحديث مصدر المشغل
+            player.src({ src: server.src, type: 'application/x-mpegURL' });
+            player.play().catch(e => console.error("خطأ في التشغيل:", e));
+            
+            // تحديث حالة الأزرار
+            updateActiveButton();
+            statusMessage.textContent = `جاري الاتصال بـ: ${server.name}`;
+            setTimeout(() => { statusMessage.textContent = ''; }, 3000);
+        }
+
+        // دالة لتحديث الزر النشط
+        function updateActiveButton() {
+            const buttons = serverButtonsContainer.querySelectorAll('button');
+            buttons.forEach((btn, index) => {
+                btn.classList.toggle('active-server', index === currentServerIndex);
             });
         }
+
+        // إنشاء أزرار السيرفرات ديناميكياً
+        servers.forEach((server, index) => {
+            const button = document.createElement('button');
+            button.className = 'server-btn text-white py-2 px-4 rounded-md text-sm';
+            button.textContent = server.name;
+            button.onclick = () => switchServer(index);
+            serverButtonsContainer.appendChild(button);
+        });
+
+        // =================================================================
+        // !! الجزء الخاص بالإصلاح التلقائي للبث !!
+        // =================================================================
+        let errorTimeout;
+        player.on('error', function() {
+            console.warn(`حدث خطأ في السيرفر ${currentServerIndex + 1}. سيتم محاولة السيرفر التالي.`);
+            
+            // نمنع تكرار الأخطاء السريع
+            clearTimeout(errorTimeout);
+            errorTimeout = setTimeout(() => {
+                statusMessage.textContent = 'انقطع الاتصال، جاري محاولة سيرفر آخر...';
+                // انتقل إلى السيرفر التالي
+                switchServer(currentServerIndex + 1);
+            }, 3000); // انتظر 3 ثوان قبل التبديل
+        });
+        
+        // ابدأ بالتشغيل من السيرفر الأول
+        switchServer(0);
+
+        // ... (كود زر المشاركة كما هو) ...
+        const shareButton = document.getElementById('share-button');
+        shareButton.addEventListener('click', function() { /* ... */ });
+    });
     </script>
-    
 </body>
 </html>
