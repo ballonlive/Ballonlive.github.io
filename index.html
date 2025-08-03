@@ -3,33 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موقعك لبث المباريات المباشرة</title>
+    <!-- عنوان الصفحة -->
+    <title>Ballon TV Live</title>
+
+    <!-- Tailwind CSS للتصميم السريع (هذا هو كل ما تحتاجه الآن) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- لمسة جمالية: تغيير لون الخلفية ليتناسب مع موقع رياضي -->
     <style>
-        body { font-family: 'Tahoma', sans-serif; background-color: #f0f2f5; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1, h2 { text-align: center; color: #1877f2; }
-        .match-list { list-style: none; padding: 0; }
-        .match-list li { background-color: #f9f9f9; border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px; text-align: center; }
-        .match-list a { text-decoration: none; color: #056a05; font-weight: bold; font-size: 1.2em; }
-        .match-list a:hover { text-decoration: underline; }
+        body {
+            background-color: #1a202c; /* لون رمادي داكن */
+        }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>مباريات اليوم بث مباشر</h1>
-        <p style="text-align: center;">اختر المباراة التي تريد مشاهدتها</p>
+    
+    <!-- الحاوية الرئيسية مع هوامش جانبية للشاشات المختلفة -->
+    <div class="main container mx-auto px-4 sm:px-6 md:px-8">
         
-        <h2>قائمة المباريات</h2>
-        <ul class="match-list">
-            <!-- هنا ستضيف روابط المباريات الجديدة -->
-            <li>
-                <a href="match1.html">بث مباشر مباراة ريال مدريد وبرشلونة (مثال)</a>
-            </li>
-            <!-- مثال لمباراة أخرى -->
-            <!-- <li><a href="match2.html">بث مباشر مباراة الأهلي والزمالك</a></li> -->
-        </ul>
+        <!-- رأس الصفحة -->
+        <header class="text-center py-8">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white">
+                📺 Ballon TV Live
+            </h1>
+            <p class="text-gray-400 mt-2">شاهد أهم المباريات مباشرة وبجودة عالية</p>
+        </header>
+
+        <!-- قسم المباريات -->
+        <section id="live-matches">
+            <h2 class="text-2xl font-semibold text-yellow-400 border-b-2 border-yellow-400 pb-2 mb-6">
+                أهم مباريات اليوم
+            </h2>
+            
+            <!-- ========================================================== -->
+            <!--   !!  هنا ستقوم بإضافة المباريات الجديدة !!                 -->
+            <!--   لكل مباراة جديدة، انسخ "بطاقة المباراة" بالكامل         -->
+            <!--   وغيّر اسم المباراة ورابط صفحة البث (href)              -->
+            <!-- ========================================================== -->
+
+            <!-- بطاقة المباراة رقم 1 (مثال) -->
+            <div class="match-card bg-gray-800 p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
+                <div class="teams">
+                    <p class="text-white text-lg font-bold">ريال مدريد ضد برشلونة</p>
+                    <p class="text-gray-400 text-sm">الدوري الإسباني - الجولة 10</p>
+                </div>
+                <!-- !! غير الرابط هنا !! اجعله يشير إلى صفحة البث مثل "match1.html" -->
+                <a href="match1.html" class="watch-button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                    مشاهدة
+                </a>
+            </div>
+
+            <!-- بطاقة المباراة رقم 2 (مثال) -->
+            <div class="match-card bg-gray-800 p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
+                <div class="teams">
+                    <p class="text-white text-lg font-bold">ليفربول ضد مانشستر سيتي</p>
+                    <p class="text-gray-400 text-sm">الدوري الإنجليزي الممتاز</p>
+                </div>
+                <!-- !! غير الرابط هنا !! اجعله يشير إلى صفحة البث مثل "match2.html" -->
+                <a href="match2.html" class="watch-button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                    مشاهدة
+                </a>
+            </div>
+            
+            <!-- بطاقة المباراة رقم 3 (مثال) -->
+            <div class="match-card bg-gray-800 p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
+                <div class="teams">
+                    <p class="text-white text-lg font-bold">الأهلي ضد الزمالك</p>
+                    <p class="text-gray-400 text-sm">نهائي كأس مصر</p>
+                </div>
+                <!-- !! غير الرابط هنا !! اجعله يشير إلى صفحة البث مثل "match3.html" -->
+                <a href="match3.html" class="watch-button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                    مشاهدة
+                </a>
+            </div>
+
+        </section>
+
     </div>
+    
+    <!-- !! هام جداً: ضع كود الإعلانات المنبثقة هنا !! -->
+    <!-- يمكنك لصق كود JavaScript من Adsterra أو PropellerAds هنا -->
 
 </body>
 </html>
