@@ -3,173 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بث مباشر: ريال مدريد ضد برشلونة - Ballon TV Live</title>
-
-    <!-- Google Fonts لتحسين الخطوط -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CSS للتصميم -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
-    <!-- Video.js CSS -->
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <title>مشغل بث مباشر</title>
     
-    <!-- ثيم (Skin) احترافي وداكن لـ Video.js -->
-    <link href="https://unpkg.com/@videojs/themes@1/dist/forest/index.css" rel="stylesheet">
-
-    <!-- مكتبة أيقونات Font Awesome (لزر المشاركة وغيره) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-    <!-- الأنماط المخصصة للصفحة -->
+    <!-- استايل بسيط لجعل المشغل يملأ الصفحة -->
     <style>
-        body {
-            background-color: #111827; /* رمادي داكن جداً */
-            font-family: 'Cairo', sans-serif;
-            color: #E5E7EB; /* لون النص الفاتح */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #000;
         }
-
-        /* حاوية المشغل مع خلفية ضبابية ديناميكية */
-        .player-area {
-            position: relative;
-            background-size: cover;
-            background-position: center;
-            border-radius: 1rem;
-            padding: 2rem; /* مساحة داخلية حول المشغل */
-            margin-bottom: 2rem;
-            /*  !! غيّر صورة الخلفية هنا لتناسب المباراة !! */
-            background-image: url('https://i.imgur.com/8i2B5zS.jpg'); /* مثال: صورة ملعب كرة قدم */
+        #player-wrapper {
+            width: 100%;
+            height: 100vh; /* يجعل الحاوية تملأ ارتفاع الشاشة */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-
-        .player-area::before {
-            content: '';
-            position: absolute;
-            top: 0; right: 0; bottom: 0; left: 0;
-            background-color: rgba(17, 24, 39, 0.8); /* طبقة داكنة شبه شفافة */
-            backdrop-filter: blur(16px); /* التأثير الضبابي الساحر */
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 1rem;
-            z-index: 1;
-        }
-
-        /* لجعل المشغل والمحتوى فوق الطبقة الضبابية */
-        .player-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* تخصيص المشغل */
-        .video-js.vjs-theme-forest {
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        #player {
+            width: 90%;
+            max-width: 1280px; /* حد أقصى لعرض المشغل */
         }
     </style>
-</head>
-<body class="antialiased">
-
-    <!-- ======================= -->
-    <!--  مساحة إعلانية علوية   -->
-    <!-- ======================= -->
-    <div id="top-ad-space" class="container mx-auto my-4 px-4 text-center h-24 bg-gray-700 flex items-center justify-center rounded-lg">
-        <p class="text-gray-400">ضع كود الإعلان (بنر 728x90) هنا</p>
-    </div>
-
-    <div class="container mx-auto px-4">
-        <!-- منطقة المشغل الرئيسية -->
-        <div class="player-area">
-            <div class="player-content">
-                <!-- عنوان وتفاصيل المباراة -->
-                <div class="match-details mb-4 text-center">
-                    <h1 class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">ريال مدريد ضد برشلونة</h1>
-                    <p class="text-lg text-yellow-400 font-bold mt-1">الدوري الإسباني - الجولة 10</p>
-                </div>
-
-                <!-- المشغل -->
-                <video
-                    id="ballon-player"
-                    class="video-js vjs-theme-forest vjs-big-play-centered"
-                    controls
-                    preload="auto"
-                    width="16" height="9"> <!-- نسبة 16:9 القياسية -->
-                    <!-- !! غيّر رابط البث هنا !! -->
-                    <source src="https://windnew.newkso.ru/wind/premium49/mono.m3u8" type="application/x-mpegURL">
-                </video>
-            </div>
-        </div>
-
-        <!-- أزرار التحكم والمشاركة -->
-        <div class="controls-bar flex flex-col md:flex-row justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg mb-8">
-            <div class="server-info mb-4 md:mb-0">
-                <span class="text-white font-bold">السيرفر الحالي: <span class="text-green-400">رئيسي</span></span>
-                <p class="text-gray-400 text-sm">إذا توقف البث، يرجى تحديث الصفحة.</p>
-            </div>
-            <div class="actions">
-                <button id="share-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300">
-                    <i class="fas fa-share-alt mr-2"></i> مشاركة البث
-                </button>
-            </div>
-        </div>
-
-        <!-- ======================= -->
-        <!--  مساحة إعلانية وسطى   -->
-        <!-- ======================= -->
-        <div id="middle-ad-space" class="container mx-auto my-4 px-4 text-center h-48 bg-gray-700 flex items-center justify-center rounded-lg">
-            <p class="text-gray-400">ضع كود الإعلان (بنر 300x250 أو غيره) هنا</p>
-        </div>
-
-        <!-- قسم معلومات إضافية -->
-        <div class="more-info bg-gray-800 p-6 rounded-lg">
-            <h2 class="text-2xl font-bold text-yellow-400 border-b-2 border-yellow-400 pb-2 mb-4">معلومات عن المباراة</h2>
-            <p>
-                مواجهة كلاسيكية مرتقبة في قمة الدوري الإسباني. استمتع بالمشاهدة على Ballon TV Live. نحن نقدم لك أفضل تجربة مشاهدة ممكنة بدون إعلانات مزعجة داخل المشغل.
-            </p>
-            <p class="mt-4">
-                لدعمنا، يمكنك التفاعل مع الإعلانات الموجودة في الصفحة أو مشاركة الرابط مع أصدقائك.
-            </p>
-        </div>
-    </div>
-
-    <!-- زر العودة للصفحة الرئيسية (ثابت في الزاوية) -->
-    <a href="index.html" title="العودة للرئيسية" class="fixed bottom-4 left-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold w-12 h-12 flex items-center justify-center rounded-full shadow-lg transition-transform transform hover:scale-110">
-        <i class="fas fa-home text-xl"></i>
-    </a>
     
-    <!-- مكتبات JavaScript -->
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script>
-        // 1. تهيئة مشغل الفيديو
-        var player = videojs('ballon-player', {
-            autoplay: 'muted', // تشغيل تلقائي مع كتم الصوت
-            fluid: true, // يجعل المشغل يتجاوب مع حجم الحاوية
-            liveui: true, // واجهة محسّنة للبث المباشر
-            playbackRates: [0.5, 1, 1.25, 1.5],
-            controlBar: {
-                // تفعيل الميزات الحديثة
-                pictureInPictureToggle: true, 
-                fullscreenToggle: true
-            }
-        });
+    <!-- استدعاء مكتبة Clappr من CDN -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
+</head>
+<body>
 
-        // 2. تفعيل زر المشاركة
-        const shareButton = document.getElementById('share-button');
-        shareButton.addEventListener('click', function() {
-            if (navigator.share) {
-                // استخدام واجهة المشاركة الأصلية في المتصفحات الداعمة
-                navigator.share({
-                    title: document.title,
-                    text: 'شاهد مباراة القمة مباشرة على Ballon TV Live!',
-                    url: window.location.href
-                }).catch(console.error);
-            } else {
-                // حل بديل للمتصفحات التي لا تدعم المشاركة (يقوم بنسخ الرابط)
-                navigator.clipboard.writeText(window.location.href).then(function() {
-                    shareButton.innerHTML = '<i class="fas fa-check mr-2"></i> تم نسخ الرابط!';
-                    setTimeout(() => {
-                        shareButton.innerHTML = '<i class="fas fa-share-alt mr-2"></i> مشاركة البث';
-                    }, 2000);
-                });
+    <div id="player-wrapper">
+        <div id="player"></div>
+    </div>
+
+    <script>
+        // إعداد مشغل Clappr
+        var player = new Clappr.Player({
+            // الرابط الذي تريد تشغيله
+            source: 'https://af.ayassport.ir/hls2/ssc1.m3u8',
+            
+            // تحديد العنصر الذي سيحتوي على المشغل
+            parentId: '#player',
+            
+            // خيارات إضافية
+            width: '100%',
+            height: '100%',
+            autoPlay: true, // لتشغيل البث تلقائياً عند تحميل الصفحة
+            poster: 'https://via.placeholder.com/1280x720.png?text=Loading+Stream...', // صورة تظهر قبل بدء البث
+            
+            // إعدادات خاصة بـ HLS لضمان أفضل توافق
+            hlsjsConfig: {
+              enableWorker: true
             }
         });
     </script>
