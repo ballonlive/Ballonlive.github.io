@@ -3,166 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ballon TV Live - شاهد أهم المباريات مباشرة</title>
+    <title>بث مباشر - قنوات بي ان سبورت</title>
 
-    <!-- Google Fonts لتحسين الخطوط -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CSS للتصميم -->
+    <!-- 1. استدعاء مكتبة Tailwind CSS للتصميم -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-    <!-- مكتبة أيقونات Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-    <!-- الأنماط المخصصة للصفحة الرئيسية -->
+    <!-- ================== CSS مدمج هنا (بدلاً من ملف خارجي) ================== -->
     <style>
+        /* يمكنك استخدام خط جوجل لتحسين المظهر */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        
         body {
-            background-color: #0f172a; /* لون أزرق داكن جداً وأكثر احترافية */
             font-family: 'Cairo', sans-serif;
         }
-        .hero-section {
-            background-image: linear-gradient(to top, rgba(15, 23, 42, 1), rgba(15, 23, 42, 0.7)), url('https://i.imgur.com/8i2B5zS.jpg');
-            background-size: cover;
-            background-position: center;
+
+        /* تنسيق كروت القنوات */
+        .channel-card {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background-color: #374151; /* bg-gray-700 */
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: 2px solid transparent;
         }
-        .match-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        /* تأثير عند مرور الماوس */
+        .channel-card:hover {
+            background-color: #4b5563; /* bg-gray-600 */
+            transform: scale(1.03);
         }
-        .match-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(234, 179, 8, 0.2), 0 10px 10px -5px rgba(234, 179, 8, 0.1);
+
+        /* تنسيق القناة النشطة (التي يتم عرضها) */
+        .channel-card.active {
+            background-color: #1e3a8a; /* bg-blue-800 */
+            border-color: #3b82f6; /* border-blue-500 */
+            font-weight: bold;
         }
-        .live-badge {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .7; }
+
+        /* للحفاظ على أبعاد الفيديو 16:9 */
+        .aspect-w-16 { position: relative; padding-bottom: 56.25%; }
+        .aspect-h-9 > iframe { position: absolute; top: 0; right: 0; width: 100%; height: 100%; }
+
+        /* تنسيق أماكن الإعلانات للتوضيح */
+        .ad-placeholder {
+            border: 2px dashed #4a5563;
         }
     </style>
+    <!-- ====================================================================== -->
+
 </head>
-<body class="bg-slate-900 text-gray-200">
+<body class="bg-gray-900 text-white">
 
-    <!-- شريط التنقل العلوي -->
-    <nav class="bg-gray-900/50 backdrop-blur-sm sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <a href="index.html" class="text-2xl font-bold text-white">📺 Ballon TV</a>
-            <div class="hidden md:flex space-x-6 space-x-reverse items-center">
-                <a href="#" class="text-gray-300 hover:text-yellow-400">الرئيسية</a>
-                <a href="#" class="text-gray-300 hover:text-yellow-400">تواصل معنا</a>
+    <div class="container mx-auto p-4">
+
+        <header class="text-center my-6">
+            <h1 class="text-4xl font-bold">بث مباشر للمباريات</h1>
+            <p class="text-gray-400 mt-2">اختر القناة التي تريد مشاهدتها من القائمة أدناه</p>
+        </header>
+
+        <!-- =========== مكان الإعلان الأول (بانر علوي) =========== -->
+        <!-- احذف الـ <span> والصق كود إعلانك هنا -->
+        <div class="ad-placeholder my-4 bg-gray-700 h-24 flex items-center justify-center">
+            <span class="text-gray-400">ضع كود إعلان البانر هنا (مثلاً: 728x90)</span>
+        </div>
+        <!-- ====================================================== -->
+
+        <main class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+            <!-- قسم مشغل الفيديو -->
+            <div class="md:col-span-3 bg-black rounded-lg shadow-lg">
+                <div class="aspect-w-16 aspect-h-9">
+                    <!-- هذا الـ iframe سيعرض صفحة player.html -->
+                    <iframe id="video-iframe"
+                        src="player.html"
+                        frameborder="0"
+                        allow="autoplay; encrypted-media"
+                        allowfullscreen
+                        class="w-full h-full rounded-lg">
+                    </iframe>
+                </div>
+                <div id="current-channel-name" class="p-4 text-xl font-semibold">
+                    الرجاء اختيار قناة للبدء
+                </div>
             </div>
-        </div>
-    </nav>
-    
-    <!-- قسم الهيرو (العنوان الرئيسي) -->
-    <header class="hero-section text-center py-20 md:py-32">
-        <div class="container mx-auto px-4">
-            <h1 class="text-4xl md:text-6xl font-black text-white drop-shadow-lg">قلب الحدث الرياضي بين يديك</h1>
-            <p class="text-lg md:text-xl text-gray-300 mt-4 max-w-2xl mx-auto">تابع أهم المباريات والبطولات العالمية مباشرة وبجودة عالية، لحظة بلحظة.</p>
-        </div>
-    </header>
 
-    <!-- ======================= -->
-    <!--  مساحة إعلانية علوية   -->
-    <!-- ======================= -->
-    <div id="top-ad-space" class="container mx-auto my-8 px-4 text-center h-24 bg-gray-800 flex items-center justify-center rounded-lg">
-        <p class="text-gray-500">مساحة إعلانية (بنر 728x90)</p>
+            <!-- قسم قائمة القنوات -->
+            <div class="md:col-span-1 bg-gray-800 p-4 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 border-b-2 border-gray-700 pb-2">قائمة القنوات</h2>
+                <div id="channel-list" class="space-y-2">
+                    
+                    <!-- قناة 1 -->
+                    <!-- !! هام: ضع رابط البث الحقيقي في data-stream-url ورابط شعار القناة في src -->
+                    <div class="channel-card" data-stream-url="ضع رابط البث m3u8 هنا" data-channel-name="beIN SPORTS 1 HD">
+                        <img src="https://i.ibb.co/LQrjN7s/bein1.png" alt="beIN 1" class="w-10 h-10 ml-3">
+                        <span>beIN SPORTS 1 HD</span>
+                    </div>
+
+                    <!-- قناة 2 -->
+                    <div class="channel-card" data-stream-url="ضع رابط البث m3u8 هنا" data-channel-name="beIN SPORTS 2 HD">
+                        <img src="https://i.ibb.co/pZ4T9s3/bein2.png" alt="beIN 2" class="w-10 h-10 ml-3">
+                        <span>beIN SPORTS 2 HD</span>
+                    </div>
+                    
+                    <!-- قناة 3 -->
+                    <div class="channel-card" data-stream-url="ضع رابط البث m3u8 هنا" data-channel-name="beIN SPORTS 3 HD">
+                        <img src="https://i.ibb.co/z5pB0s6/bein3.png" alt="beIN 3" class="w-10 h-10 ml-3">
+                        <span>beIN SPORTS 3 HD</span>
+                    </div>
+
+                    <!-- قناة الأخبار -->
+                    <div class="channel-card" data-stream-url="ضع رابط البث m3u8 هنا" data-channel-name="beIN SPORTS الإخبارية">
+                        <img src="https://i.ibb.co/3cYmZKy/bein-news.png" alt="beIN News" class="w-10 h-10 ml-3">
+                        <span>beIN SPORTS الإخبارية</span>
+                    </div>
+                    
+                    <!-- يمكنك إضافة المزيد من القنوات هنا بنفس الطريقة -->
+
+                </div>
+                 <!-- =========== مكان الإعلان الثاني (جانبي) =========== -->
+                 <!-- احذف الـ <span> والصق كود إعلانك هنا -->
+                <div class="ad-placeholder mt-6 bg-gray-700 h-64 flex items-center justify-center">
+                    <span class="text-gray-400">ضع كود إعلان جانبي هنا</span>
+                </div>
+                <!-- ==================================================== -->
+            </div>
+            
+        </main>
     </div>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="container mx-auto px-6 py-8">
-        <h2 class="text-3xl font-bold text-yellow-400 border-r-4 border-yellow-400 pr-4 mb-8">
-            أهم مباريات اليوم
-        </h2>
-        
-        <!-- شبكة عرض المباريات -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
-            <!-- ============================================= -->
-            <!--   !! بطاقة المباراة رقم 1 (قالب جديد) !!      -->
-            <!--   انسخ هذا القالب بالكامل لكل مباراة جديدة    -->
-            <!-- ============================================= -->
-            <div class="match-card bg-gray-800 rounded-2xl shadow-xl overflow-hidden flex flex-col">
-                <div class="p-4 border-b border-gray-700 flex justify-between items-center">
-                    <span class="text-sm text-gray-400">الدوري الإسباني</span>
-                    <span class="live-badge bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">مباشر الآن</span>
-                </div>
-                <div class="flex-grow p-6 flex flex-col items-center justify-center text-center">
-                    <div class="flex items-center justify-around w-full">
-                        <div class="team text-center">
-                            <img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4fAVAZeCJWRcKoLW7koA_96x96.png" alt="شعار برشلونة" class="h-20 w-20 mx-auto mb-2">
-                            <p class="font-bold text-lg text-white">برشلونة</p>
-                        </div>
-                        <span class="text-4xl font-black text-gray-500 mx-4">VS</span>
-                        <div class="team text-center">
-                            <img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4fAVAZeCJWRcKoLW7koA_96x96.png" alt="شعار ريال مدريد" class="h-20 w-20 mx-auto mb-2">
-                            <p class="font-bold text-lg text-white">ريال مدريد</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 mt-4"><i class="far fa-clock"></i> 10:00 مساءً بتوقيت مكة</p>
-                </div>
-                <a href="match1.html" class="block bg-yellow-400 text-gray-900 font-bold text-center py-4 hover:bg-yellow-500 transition duration-300">
-                    <i class="fas fa-play mr-2"></i> مشاهدة المباراة
-                </a>
-            </div>
+    <!-- 2. استدعاء مكتبة jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-            <!-- بطاقة المباراة رقم 2 -->
-            <div class="match-card bg-gray-800 rounded-2xl shadow-xl overflow-hidden flex flex-col">
-                <div class="p-4 border-b border-gray-700 flex justify-between items-center">
-                    <span class="text-sm text-gray-400">الدوري الإنجليزي</span>
-                    <span class="bg-gray-600 text-white text-xs font-bold px-3 py-1 rounded-full">لم تبدأ</span>
-                </div>
-                <div class="flex-grow p-6 flex flex-col items-center justify-center text-center">
-                    <div class="flex items-center justify-around w-full">
-                        <div class="team text-center">
-                            <img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4fAVAZeCJWRcKoLW7koA_96x96.png" alt="شعار ليفربول" class="h-20 w-20 mx-auto mb-2">
-                            <p class="font-bold text-lg text-white">ليفربول</p>
-                        </div>
-                        <span class="text-4xl font-black text-gray-500 mx-4">VS</span>
-                        <div class="team text-center">
-                            <img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4fAVAZeCJWRcKoLW7koA_96x96.png" alt="شعار مانشستر سيتي" class="h-20 w-20 mx-auto mb-2">
-                            <p class="font-bold text-lg text-white">مانشستر سيتي</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 mt-4"><i class="far fa-clock"></i> 11:00 مساءً بتوقيت مكة</p>
-                </div>
-                <a href="match2.html" class="block bg-yellow-400 text-gray-900 font-bold text-center py-4 hover:bg-yellow-500 transition duration-300">
-                    <i class="fas fa-play mr-2"></i> مشاهدة المباراة
-                </a>
-            </div>
+    <!-- ================ JavaScript مدمج هنا (بدلاً من ملف خارجي) ================ -->
+    <script>
+        $(document).ready(function() {
+            const playerIframe = $('#video-iframe'); 
+            const currentChannelName = $('#current-channel-name');
 
-            <!-- ======================= -->
-            <!--    بطاقة إعلانية       -->
-            <!-- ======================= -->
-            <div class="ad-card bg-gray-800 rounded-2xl shadow-xl flex items-center justify-center p-4">
-                <div class="text-center text-gray-500">
-                    <p>مساحة إعلانية</p>
-                    <p>(300x250)</p>
-                    <p>ضع كود إعلانك هنا</p>
-                </div>
-            </div>
+            // وظيفة التعامل مع نقرة القناة
+            $('.channel-card').on('click', function() {
+                const streamUrl = $(this).data('stream-url');
+                const channelName = $(this).data('channel-name');
 
-        </div>
-    </main>
+                if (streamUrl && streamUrl !== "ضع رابط البث m3u8 هنا") {
+                    // نقوم بإنشاء الرابط الجديد لصفحة المشغل مع تمرير رابط البث
+                    const newIframeSrc = `player.html?stream=${encodeURIComponent(streamUrl)}`;
+                    playerIframe.attr('src', newIframeSrc);
 
-    <!-- القسم السفلي (الفوتر) -->
-    <footer class="bg-gray-900 mt-16">
-        <div class="container mx-auto px-6 py-8 text-center text-gray-400">
-            <div class="mb-4">
-                <a href="#" class="mx-2 text-2xl hover:text-yellow-400"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="mx-2 text-2xl hover:text-yellow-400"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="mx-2 text-2xl hover:text-yellow-400"><i class="fab fa-telegram-plane"></i></a>
-            </div>
-            <p>© 2024 Ballon TV Live. جميع الحقوق محفوظة.</p>
-            <p class="text-xs mt-2">تنويه: هذا الموقع لا يستضيف أي ملفات فيديو على خوادمه. جميع المحتويات مقدمة من أطراف ثالثة غير تابعة للموقع.</p>
-        </div>
-    </footer>
-    
-    <!-- !! هام جداً: ضع كود الإعلانات المنبثقة (Pop-up/Pop-under) هنا !! -->
-    <!-- يمكنك لصق كود JavaScript من Adsterra أو PropellerAds هنا ليعمل على مستوى الموقع كله -->
-    <!-- <script type='text/javascript' src='//...your-ad-network.com/...'></script> -->
+                    // تحديث اسم القناة المعروضة
+                    currentChannelName.text(`أنت تشاهد الآن: ${channelName}`);
+                    
+                    // تحديث التنسيق لإظهار القناة النشطة
+                    $('.channel-card').removeClass('active');
+                    $(this).addClass('active');
+                } else {
+                    currentChannelName.text(`رابط البث لقناة ${channelName} غير متوفر حالياً.`);
+                    alert(`عفواً، رابط البث لهذه القناة غير متاح.`);
+                }
+            });
+
+            // اختيار القناة الأولى تلقائياً عند تحميل الصفحة (اختياري)
+            if ($('.channel-card').length > 0) {
+                // نؤجل التشغيل قليلاً لضمان تحميل كل شيء
+                setTimeout(function() {
+                    $('.channel-card').first().trigger('click');
+                }, 500);
+            }
+        });
+    </script>
+    <!-- ====================================================================== -->
 
 </body>
 </html>
