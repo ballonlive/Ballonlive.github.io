@@ -1,134 +1,192 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl" lang="ar" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بث مباشر - كل القنوات</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-        body { font-family: 'Cairo', sans-serif; }
-        .channel-card {
-            display: flex; align-items: center; padding: 12px; background-color: #374151;
-            border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease;
-            border: 2px solid transparent;
-        }
-        .channel-card:hover { background-color: #4b5563; transform: scale(1.03); }
-        .channel-card.active { background-color: #1e3a8a; border-color: #3b82f6; font-weight: bold; }
-        .aspect-w-16 { position: relative; padding-bottom: 56.25%; background-color: #000; }
-        .aspect-h-9 > iframe { position: absolute; top: 0; right: 0; width: 100%; height: 100%; border: none; }
-        .ad-placeholder { border: 2px dashed #4a5563; }
-        #loading-message { text-align: center; padding: 2rem; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ballon TV - Your M3U Channels</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <!-- استدعاء مكتبة وتصميم Video.js -->
+  <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+
+  <style>
+    /* --- Global & Theming (من تصميمك) --- */
+    :root {
+      --font-family: 'Tajawal', sans-serif;
+      --green-accent: #1db954; 
+      --bg-light: #f5f5f7; --surface-light: #ffffff; --text-primary-light: #1d1d1f; --text-secondary-light: #6e6e73; --accent-light: #0071e3; --border-light: #d2d2d7;
+      --bg-dark: #121212; --surface-dark: #1e1e1e; --text-primary-dark: #f5f5f7; --text-secondary-dark: #a1a1a6; --accent-dark: #0a84ff; --border-dark: #3a3a3c;
+    }
+    [data-theme="light"] {
+      --bg-color: var(--bg-light); --surface-color: var(--surface-light); --text-primary: var(--text-primary-light); --text-secondary: var(--text-secondary-light); --accent-color: var(--accent-light); --border-color: var(--border-light); --shadow-color: rgba(0, 0, 0, 0.08); --shadow-color-hover: rgba(0, 0, 0, 0.15);
+    }
+    [data-theme="dark"] {
+      --bg-color: var(--bg-dark); --surface-color: var(--surface-dark); --text-primary: var(--text-primary-dark); --text-secondary: var(--text-secondary-dark); --accent-color: var(--accent-dark); --border-color: var(--border-dark); --shadow-color: rgba(0, 0, 0, 0.2); --shadow-color-hover: rgba(0, 0, 0, 0.4);
+    }
+    body { margin: 0; padding: 0; font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-primary); user-select: none; transition: background-color 0.3s, color 0.3s; }
+    a { text-decoration: none; color: inherit; }
+
+    /* --- Header & Sidenav (من تصميمك) --- */
+    .header-container { position: sticky; top: 0; z-index: 1000; background-color: var(--surface-color); padding: 15px 20px; box-shadow: 0 2px 10px var(--shadow-color); transition: background-color 0.3s, box-shadow 0.3s; }
+    header { display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 22px; font-weight: 700; color: var(--accent-color); }
+    .header-icon { font-size: 24px; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; }
+    .header-icon:hover { color: var(--accent-color); }
+    .sidenav { height: 100%; width: 0; position: fixed; top: 0; right: 0; background-color: var(--surface-color); overflow-x: hidden; transition: 0.3s ease-out; z-index: 1002; box-shadow: -5px 0 15px rgba(0,0,0,0.2); }
+    .sidenav a { padding: 15px 20px 15px 32px; text-decoration: none; font-size: 18px; font-weight: 500; color: var(--text-primary); display: block; transition: 0.3s; }
+    .sidenav a:hover { background-color: color-mix(in srgb, var(--accent-color) 10%, transparent); color: var(--accent-color); }
+    .sidenav .close-btn { position: absolute; top: 15px; left: 15px; font-size: 30px; }
+
+    /* --- Main Content Area & Grid (من تصميمك) --- */
+    main { padding: 20px; }
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+    .channel-card {
+      background-color: var(--surface-color); border-radius: 12px; overflow: hidden;
+      box-shadow: 0 4px 10px var(--shadow-color); transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer; display: flex; flex-direction: column;
+    }
+    .channel-card:hover { transform: scale(1.05); box-shadow: 0 8px 20px var(--shadow-color-hover); z-index: 10; }
+    .channel-card .card-image { width: 100%; padding-bottom: 75%; background-size: cover; background-position: center; background-color: var(--border-color); }
+    .channel-card .card-title {
+      height: 40px; display: flex; align-items: center; justify-content: center; text-align: center;
+      font-size: 12px; font-weight: 700; padding: 0 5px; color: var(--text-primary);
+    }
+    
+    /* --- Player Modal (جديد) --- */
+    .player-modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      z-index: 2000; display: none; justify-content: center; align-items: center;
+      backdrop-filter: blur(5px);
+    }
+    .player-modal-content {
+      width: 90%; max-width: 960px;
+      height: auto; aspect-ratio: 16 / 9;
+      background-color: #000; position: relative;
+      border-radius: 10px; overflow: hidden;
+    }
+    .player-modal .close-player-btn {
+      position: absolute; top: -35px; right: 0;
+      font-size: 30px; color: white; cursor: pointer;
+      background: none; border: none; z-index: 2001;
+    }
+    .video-js { width: 100%; height: 100%; }
+  </style>
 </head>
-<body class="bg-gray-900 text-white">
 
-    <div class="container mx-auto p-4">
+<body>
+  <!-- Header (من تصميمك) -->
+  <div class="header-container">
+    <header>
+      <i class="fa-solid fa-bars header-icon" onclick="openNav()"></i>
+      <h1>My TV Channels</h1>
+      <i class="fa-solid fa-circle-half-stroke header-icon" id="theme-toggle-btn"></i>
+    </header>
+  </div>
 
-        <header class="text-center my-6">
-            <h1 class="text-4xl font-bold">بث مباشر للمباريات</h1>
-            <p class="text-gray-400 mt-2">اختر القناة التي تريد مشاهدتها من القائمة أدناه</p>
-        </header>
+  <!-- Main Content (معدل) -->
+  <main>
+    <section id="live-channels">
+      <div id="items-grid" class="items-grid">
+        <!-- سيتم ملء القنوات هنا بواسطة JavaScript -->
+        <p id="loading-message">جاري تحميل القنوات...</p>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Sidenav (من تصميمك) -->
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">×</a> 
+    <a href="#">الرئيسية</a>
+    <a href="#">سياسة الخصوصية</a>
+  </div>
 
-        <div class="ad-placeholder my-4 bg-gray-700 h-24 flex items-center justify-center">
-            <span class="text-gray-400">مكان الإعلان (728x90)</span>
-        </div>
-
-        <main class="grid grid-cols-1 md:grid-cols-4 gap-6">
-
-            <div class="md:col-span-3 bg-black rounded-lg shadow-lg">
-                <div class="aspect-w-16 aspect-h-9">
-                    <iframe id="video-iframe" src="about:blank" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-                </div>
-                <div id="current-channel-name" class="p-4 text-xl font-semibold">
-                    الرجاء اختيار قناة للبدء
-                </div>
-            </div>
-
-            <div class="md:col-span-1 bg-gray-800 p-4 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-bold mb-4 border-b-2 border-gray-700 pb-2">قائمة القنوات</h2>
-                
-                <!-- سيتم ملء القائمة هنا تلقائياً بواسطة JavaScript -->
-                <div id="channel-list" class="space-y-2 max-h-screen overflow-y-auto">
-                    <p id="loading-message">جاري تحميل قائمة القنوات...</p>
-                </div>
-
-                <div class="ad-placeholder mt-6 bg-gray-700 h-64 flex items-center justify-center">
-                    <span class="text-gray-400">مكان الإعلان الجانبي</span>
-                </div>
-            </div>
-        </main>
+  <!-- Player Modal (جديد) -->
+  <div id="playerModal" class="player-modal">
+    <div class="player-modal-content">
+        <button class="close-player-btn" onclick="closePlayer()">×</button>
+        <video id="main-player" class="video-js vjs-default-skin" controls preload="auto"></video>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- ==================== JavaScript النهائي والديناميكي ==================== -->
-    <script>
-    $(document).ready(function() {
-        const playerIframe = $('#video-iframe');
-        const currentChannelName = $('#current-channel-name');
-        const channelListDiv = $('#channel-list');
-        const loadingMessage = $('#loading-message');
-
-        // اسم الملف الذي يحتوي على قائمة التشغيل الكاملة
-        const playlistUrl = "playlist.m3u"; 
-
-        // جلب وتحليل قائمة القنوات من الملف المحلي
-        $.get(playlistUrl, function(data) {
-            loadingMessage.hide(); // إخفاء رسالة التحميل
-            const lines = data.split('\n');
-            
-            for (let i = 0; i < lines.length; i++) {
-                // البحث عن السطر الذي يحتوي على معلومات القناة
-                if (lines[i].startsWith('#EXTINF:')) {
-                    const infoLine = lines[i];
-                    const streamUrl = lines[i + 1] ? lines[i + 1].trim() : null;
-
-                    if (streamUrl && streamUrl.startsWith('http')) {
-                        // استخراج اسم القناة (الجزء الأخير بعد الفاصلة)
-                        let name = infoLine.split(',').pop();
-
-                        // استخراج رابط الشعار باستخدام regular expression
-                        let logoMatch = infoLine.match(/tvg-logo="([^"]+)"/);
-                        // إذا لم يتم العثور على شعار، نستخدم شعاراً افتراضياً
-                        let logoUrl = logoMatch ? logoMatch[1] : 'https://via.placeholder.com/40/374151/FFFFFF?text=TV';
-
-                        // إنشاء عنصر القناة وإضافته إلى القائمة
-                        const channelHtml = `
-                            <div class="channel-card" data-stream-url="${streamUrl}" data-channel-name="${name}">
-                                <img src="${logoUrl}" alt="" class="w-10 h-10 ml-3 bg-gray-600 rounded" onerror="this.src='https://via.placeholder.com/40/374151/FFFFFF?text=TV';">
-                                <span>${name}</span>
-                            </div>`;
-                        channelListDiv.append(channelHtml);
-                    }
-                }
-            }
-
-            // تشغيل القناة الأولى تلقائياً بعد بناء القائمة
-            setTimeout(() => {
-                $('#channel-list .channel-card').first().trigger('click');
-            }, 500);
-
-        }).fail(function() {
-            loadingMessage.text('فشل تحميل ملف playlist.m3u. تأكد من وجوده في نفس المجلد.');
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://vjs.zencdn.net/8.10.0/video.js"></script>
+  
+  <script>
+    // --- Scripts from your design ---
+    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const themeToggleBtn = document.getElementById('theme-toggle-btn');
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => { 
+            document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); 
         });
-
-        // وظيفة النقر على أي قناة (باستخدام event delegation)
-        channelListDiv.on('click', '.channel-card', function() {
-            const streamUrl = $(this).data('stream-url');
-            const channelName = $(this).data('channel-name');
-
-            if (streamUrl) {
-                const newIframeSrc = `player.html?stream=${encodeURIComponent(streamUrl)}`;
-                playerIframe.attr('src', newIframeSrc);
-                currentChannelName.text(`أنت تشاهد الآن: ${channelName}`);
-                
-                $('.channel-card').removeClass('active');
-                $(this).addClass('active');
-            }
-        });
+      }
     });
-    </script>
-    <!-- ======================================================================= -->
+
+    // --- NEW: Player & M3U Logic ---
+    const playerModal = document.getElementById('playerModal');
+    let videoPlayer;
+
+    // تهيئة المشغل مرة واحدة فقط
+    videoPlayer = videojs('main-player', {
+        autoplay: true,
+        fluid: true, // يجعل المشغل يتجاوب مع حجم الحاوية
+    });
+
+    function openPlayer(streamUrl) {
+      videoPlayer.src({
+        src: streamUrl,
+        type: 'application/x-mpegURL'
+      });
+      playerModal.style.display = 'flex';
+      videoPlayer.play();
+    }
+
+    function closePlayer() {
+      playerModal.style.display = 'none';
+      videoPlayer.pause();
+      videoPlayer.reset(); // إفراغ المشغل
+    }
+
+    // --- NEW: Load channels from M3U ---
+    $(document).ready(function() {
+      const grid = $('#items-grid');
+      const loadingMessage = $('#loading-message');
+      const playlistUrl = "playlist.m3u"; // اسم ملف القائمة
+
+      $.get(playlistUrl, function(data) {
+        loadingMessage.hide();
+        const lines = data.split('\n');
+        
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].startsWith('#EXTINF:')) {
+            const infoLine = lines[i];
+            const streamUrl = lines[i + 1] ? lines[i + 1].trim() : null;
+
+            if (streamUrl && streamUrl.startsWith('http')) {
+              let name = infoLine.split(',').pop();
+              let logoMatch = infoLine.match(/tvg-logo="([^"]+)"/);
+              let logoUrl = logoMatch ? logoMatch[1] : 'https://via.placeholder.com/200x150/1e1e1e/f5f5f7?text=TV';
+
+              const channelCard = `
+                <div class="channel-card" onclick="openPlayer('${streamUrl}')">
+                  <div class="card-image" style="background-image: url('${logoUrl}')" onerror="this.style.backgroundImage='url(https://via.placeholder.com/200x150/1e1e1e/f5f5f7?text=TV)'"></div>
+                  <div class="card-title">${name}</div>
+                </div>`;
+              grid.append(channelCard);
+            }
+          }
+        }
+      }).fail(function() {
+        loadingMessage.text('فشل تحميل ملف playlist.m3u. تأكد من وجوده.');
+      });
+    });
+  </script>
 </body>
 </html>
