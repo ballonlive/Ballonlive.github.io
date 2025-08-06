@@ -1,38 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Video.js Player</title>
-    <!-- 1. استدعاء مكتبة وتصميم Video.js -->
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <meta charset="utf-8">
+    <title>Clappr Player</title>
+    <!-- 1. لا نحتاج لملف CSS منفصل، Clappr يدمج التصميم -->
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
-        .video-js { width: 100%; height: 100%; }
+        #player { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
-    <!-- 2. عنصر الفيديو الخاص بـ Video.js -->
-    <video-js id="my-video" class="video-js vjs-default-skin" controls preload="auto" playsinline>
-        <p class="vjs-no-js">To view this video please enable JavaScript.</p>
-    </video-js>
 
-    <!-- 3. استدعاء مكتبة Video.js -->
-    <script src="https://vjs.zencdn.net/8.10.0/video.js"></script>
+    <!-- 2. هذا هو العنصر الذي سيحتوي على المشغل -->
+    <div id="player"></div>
+
+    <!-- 3. استدعاء مكتبة Clappr الرئيسية -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+    
+    <!-- 4. استدعاء الإضافة اللازمة لتشغيل HLS (روابط m3u8) -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr-hlsjs-playback@latest/dist/hlsjs-playback.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // جلب رابط البث من الـ URL الذي تم تمريره من الصفحة الرئيسية
+            // جلب رابط البث من الـ URL
             const params = new URLSearchParams(window.location.search);
             const streamUrl = params.get('stream');
 
             if (streamUrl) {
-                // تهيئة المشغل بالرابط
-                const player = videojs('my-video', {
-                    autoplay: true, // محاولة التشغيل التلقائي
-                    sources: [{
-                        src: streamUrl,
-                        type: 'application/x-mpegURL' // نوع البث
-                    }]
+                // تهيئة مشغل Clappr
+                var player = new Clappr.Player({
+                    source: streamUrl,        // رابط البث
+                    parentId: '#player',      // العنصر الذي سيحتوي على المشغل
+                    width: '100%',
+                    height: '100%',
+                    autoPlay: true,           // محاولة التشغيل التلقائي
+                    
+                    // تحديد الإضافة التي ستستخدم لتشغيل HLS
+                    plugins: {
+                        playback: [HlsjsPlayback]
+                    },
+                    // إعدادات خاصة بـ HLS.js لتحسين الأداء (اختياري)
+                    hlsjsConfig: {
+                        maxMaxBufferLength: 30,
+                    },
                 });
+            } else {
+                console.error("No stream URL provided to player!");
             }
         });
     </script>
