@@ -33,7 +33,113 @@
         // 3. إعداد وتشغيل مشغل Clappr
         var player = new Clappr.Player({
             // الرابط الجديد الذي تريد تشغيله
-            source: 'http://platform.topuphost.com:8577/live/alfajr4.stream/playlist.m3u8',
+            source: '<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشغل بث مباشر</title>
+    
+    <!-- استايل لجعل المشغل يملأ الشاشة بالكامل -->
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #player {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    
+    <!-- 1. استدعاء مكتبة Clappr من CDN -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
+</head>
+<body>
+
+    <!-- 2. هذا هو العنصر الذي سيحتوي على المشغل (بدلاً من الـ iframe) -->
+    <div id="player"></div>
+
+    <script>
+        // 3. إعداد وتشغيل مشغل Clappr
+        var player = new Clappr.Player({
+            // الرابط الجديد الذي تريد تشغيله
+            source: '<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشغل بث مباشر</title>
+    
+    <!-- استايل لجعل المشغل يملأ الشاشة بالكامل -->
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #player {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    
+    <!-- 1. استدعاء مكتبة Clappr من CDN -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
+</head>
+<body>
+
+    <!-- 2. هذا هو العنصر الذي سيحتوي على المشغل (بدلاً من الـ iframe) -->
+    <div id="player"></div>
+
+    <script>
+        // 3. إعداد وتشغيل مشغل Clappr
+        var player = new Clappr.Player({
+            // الرابط الجديد الذي تريد تشغيله
+            source: 'https://cdn.karwan.tv/nrt-sport/tracks-v1a1/mono.m3u8',
+            
+            // تحديد العنصر الذي سيحتوي على المشغل
+            parentId: '#player',
+            
+            // خيارات لجعل المشغل يملأ المساحة المتاحة ويعمل تلقائياً
+            width: '100%',
+            height: '100%',
+            autoPlay: true,
+            
+            // إعدادات خاصة بـ HLS لتحسين الأداء
+            hlsjsConfig: {
+              enableWorker: true
+            }
+        });
+    </script>
+
+</body>
+</html>',
+            
+            // تحديد العنصر الذي سيحتوي على المشغل
+            parentId: '#player',
+            
+            // خيارات لجعل المشغل يملأ المساحة المتاحة ويعمل تلقائياً
+            width: '100%',
+            height: '100%',
+            autoPlay: true,
+            
+            // إعدادات خاصة بـ HLS لتحسين الأداء
+            hlsjsConfig: {
+              enableWorker: true
+            }
+        });
+    </script>
+
+</body>
+</html>',
             
             // تحديد العنصر الذي سيحتوي على المشغل
             parentId: '#player',
