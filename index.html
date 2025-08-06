@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بث مباشر - قنوات من قائمة تشغيل</title>
+    <title>بث مباشر احترافي</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
@@ -30,7 +30,6 @@
         .aspect-w-16 { position: relative; padding-bottom: 56.25%; }
         .aspect-h-9 > iframe { position: absolute; top: 0; right: 0; width: 100%; height: 100%; }
         .ad-placeholder { border: 2px dashed #4a5563; }
-        /* لإظهار رسالة تحميل */
         #loading-message { font-size: 1.2rem; text-align: center; padding: 2rem; }
     </style>
 </head>
@@ -66,12 +65,9 @@
 
             <div class="md:col-span-1 bg-gray-800 p-4 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-bold mb-4 border-b-2 border-gray-700 pb-2">قائمة القنوات</h2>
-                
-                <!-- !! هام: هذا القسم سيتم ملؤه تلقائياً بواسطة JavaScript -->
                 <div id="channel-list" class="space-y-2">
                     <div id="loading-message">جاري تحميل قائمة القنوات...</div>
                 </div>
-
                 <div class="ad-placeholder mt-6 bg-gray-700 h-64 flex items-center justify-center">
                     <span class="text-gray-400">ضع كود إعلان جانبي هنا</span>
                 </div>
@@ -82,7 +78,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- ==================== JavaScript المعدّل ==================== -->
+    <!-- ==================== JavaScript المعدّل والاحترافي ==================== -->
     <script>
     $(document).ready(function() {
         const playerIframe = $('#video-iframe');
@@ -90,29 +86,24 @@
         const channelListDiv = $('#channel-list');
         const loadingMessage = $('#loading-message');
 
-        // ==== 1. تعريف رابط قائمة التشغيل (Playlist) ====
-        const playlistUrl = "playlist.m3u";
+        const playlistUrl = "playlist.m3u"; // استخدام الملف المحلي الذي أنشأته
 
-        // ==== 2. جلب وتحليل قائمة التشغيل ====
-        // ملاحظة: هذا قد لا يعمل إذا كان الموقع المصدر يمنع الطلبات من مواقع أخرى (مشكلة CORS)
         $.get(playlistUrl, function(data) {
-            loadingMessage.hide(); // إخفاء رسالة التحميل
-            const lines = data.split('\n'); // تقسيم الملف إلى أسطر
+            loadingMessage.hide();
+            const lines = data.split('\n');
             let channels = [];
 
-            // المرور على كل سطر لتحليل البيانات
             for (let i = 0; i < lines.length; i++) {
                 if (lines[i].startsWith('#EXTINF:')) {
                     const infoLine = lines[i];
+                    
+                    // --- تعديل هام: سنستخدم الرابط الذي يحتوي على stream.php ---
                     const streamUrl = lines[i + 1] ? lines[i + 1].trim() : null;
 
-                    if (streamUrl && streamUrl.startsWith('http')) {
-                        // استخراج اسم القناة
+                    if (streamUrl && streamUrl.includes('stream.php')) { // نتأكد أنه رابط من النوع الجديد
                         let name = infoLine.split(',').pop();
-                        
-                        // محاولة استخراج شعار القناة (اختياري)
                         let logoMatch = infoLine.match(/tvg-logo="([^"]+)"/);
-                        let logoUrl = logoMatch ? logoMatch[1] : 'https://i.ibb.co/LQrjN7s/bein1.png'; // شعار افتراضي
+                        let logoUrl = logoMatch ? logoMatch[1] : 'https://i.ibb.co/LQrjN7s/bein1.png';
 
                         channels.push({
                             name: name,
@@ -123,7 +114,6 @@
                 }
             }
 
-            // ==== 3. بناء قائمة القنوات في الصفحة ====
             if(channels.length > 0) {
                 channels.forEach(channel => {
                     const channelHtml = `
@@ -135,32 +125,42 @@
                     channelListDiv.append(channelHtml);
                 });
 
-                // تشغيل أول قناة تلقائياً بعد بناء القائمة
                 setTimeout(() => {
                     $('#channel-list .channel-card').first().trigger('click');
                 }, 500);
 
             } else {
-                 channelListDiv.html('<p>لم يتم العثور على قنوات في القائمة.</p>');
+                 channelListDiv.html('<p>لم يتم العثور على قنوات. تأكد من أن ملف playlist.m3u يحتوي على الروابط الصحيحة.</p>');
             }
 
         }).fail(function() {
-            // في حال فشل جلب الرابط
-            loadingMessage.text('فشل تحميل قائمة القنوات. قد يكون هناك مشكلة في المصدر أو مشكلة CORS.');
+            loadingMessage.text('فشل تحميل ملف playlist.m3u. تأكد من وجوده في نفس المجلد.');
         });
 
-        // ==== 4. تعديل حدث النقر (استخدام event delegation) ====
-        // هذا يضمن أن القنوات التي تمت إضافتها لاحقاً ستستجيب للنقر
+        // --- تعديل هام جداً: طريقة تشغيل القناة ---
         channelListDiv.on('click', '.channel-card', function() {
-            const streamUrl = $(this).data('stream-url');
+            const streamUrl = $(this).data('stream-url'); // هذا هو رابط stream.php?cid=...
             const channelName = $(this).data('channel-name');
 
             if (streamUrl) {
+                // بدلاً من محاولة فك الرابط هنا، نمرره مباشرة إلى المشغل
+                // المشغل في player.html مصمم للتعامل مع هذا
+                // عندما يتم تعيين src الخاص به، سيقوم المتصفح بطلب الرابط، والخادم سيعيد التوجيه إلى m3u8
+                // و HLS.js سيكمل المهمة.
                 const newIframeSrc = `player.html?stream=${encodeURIComponent(streamUrl)}`;
-                playerIframe.attr('src', newIframeSrc);
-                currentChannelName.text(`أنت تشاهد الآن: ${channelName}`);
                 
-                // تحديث التنسيق
+                // إعادة تحميل الـ iframe بالرابط الجديد لضمان تشغيل القناة الجديدة
+                playerIframe.attr('src', newIframeSrc);
+
+                currentChannelName.text(`جاري تحميل: ${channelName}...`);
+                
+                // تحديث اسم القناة بعد التأكد من أن الـ Iframe بدأ التحميل
+                playerIframe.on('load', function() {
+                    currentChannelName.text(`أنت تشاهد الآن: ${channelName}`);
+                    // نزيل الـ event handler لتجنب تكراره
+                    $(this).off('load'); 
+                });
+
                 $('.channel-card').removeClass('active');
                 $(this).addClass('active');
             } else {
@@ -169,7 +169,7 @@
         });
     });
     </script>
-    <!-- ========================================================== -->
+    <!-- ======================================================================= -->
 
 </body>
 </html>
