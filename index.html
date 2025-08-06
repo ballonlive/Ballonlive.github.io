@@ -8,43 +8,51 @@
     <!-- 1. استدعاء مكتبة Tailwind CSS للتصميم -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-    <!-- CSS مدمج هنا (بدلاً من ملف خارجي) -->
+    <!-- ================== CSS مدمج هنا (بدلاً من ملف خارجي) ================== -->
     <style>
+        /* يمكنك استخدام خط جوجل لتحسين المظهر */
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         
         body {
             font-family: 'Cairo', sans-serif;
         }
 
+        /* تنسيق كروت القنوات */
         .channel-card {
             display: flex;
             align-items: center;
             padding: 12px;
-            background-color: #374151;
+            background-color: #374151; /* bg-gray-700 */
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
             border: 2px solid transparent;
         }
 
+        /* تأثير عند مرور الماوس */
         .channel-card:hover {
-            background-color: #4b5563;
+            background-color: #4b5563; /* bg-gray-600 */
             transform: scale(1.03);
         }
 
+        /* تنسيق القناة النشطة (التي يتم عرضها) */
         .channel-card.active {
-            background-color: #1e3a8a;
-            border-color: #3b82f6;
+            background-color: #1e3a8a; /* bg-blue-800 */
+            border-color: #3b82f6; /* border-blue-500 */
             font-weight: bold;
         }
 
+        /* للحفاظ على أبعاد الفيديو 16:9 */
         .aspect-w-16 { position: relative; padding-bottom: 56.25%; }
         .aspect-h-9 > iframe { position: absolute; top: 0; right: 0; width: 100%; height: 100%; }
 
+        /* تنسيق أماكن الإعلانات للتوضيح */
         .ad-placeholder {
             border: 2px dashed #4a5563;
         }
     </style>
+    <!-- ====================================================================== -->
+
 </head>
 <body class="bg-gray-900 text-white">
 
@@ -56,8 +64,9 @@
         </header>
 
         <!-- =========== مكان الإعلان الأول (بانر علوي) =========== -->
+        <!-- احذف الـ <span> والصق كود إعلانك هنا -->
         <div class="ad-placeholder my-4 bg-gray-700 h-24 flex items-center justify-center">
-            <span class="text-gray-400">ضع كود إعلان البانر هنا</span>
+            <span class="text-gray-400">ضع كود إعلان البانر هنا (مثلاً: 728x90)</span>
         </div>
         <!-- ====================================================== -->
 
@@ -66,6 +75,7 @@
             <!-- قسم مشغل الفيديو -->
             <div class="md:col-span-3 bg-black rounded-lg shadow-lg">
                 <div class="aspect-w-16 aspect-h-9">
+                    <!-- هذا الـ iframe سيعرض صفحة player.html -->
                     <iframe id="video-iframe"
                         src="player.html"
                         frameborder="0"
@@ -84,33 +94,36 @@
                 <h2 class="text-2xl font-bold mb-4 border-b-2 border-gray-700 pb-2">قائمة القنوات</h2>
                 <div id="channel-list" class="space-y-2">
                     
-                    <!-- !! تم تطبيق حل مشكلة CORS هنا !! -->
-                    <!-- قناة 1 (مع البروكسي) -->
-                    <div class="channel-card" data-stream-url="https://proxy.cors.sh/https://dokko1new.newkso.ru/dokko1/premium91/mono.m3u8" data-channel-name="beIN SPORTS 1 HD">
+                    <!-- قناة 1 -->
+                    <!-- !! هام: ضع رابط البث الحقيقي في data-stream-url ورابط شعار القناة في src -->
+                    <div class="channel-card" data-stream-url="ضع رابط البث m3u8 هنا" data-channel-name="beIN SPORTS 1 HD">
                         <img src="https://i.ibb.co/LQrjN7s/bein1.png" alt="beIN 1" class="w-10 h-10 ml-3">
                         <span>beIN SPORTS 1 HD</span>
                     </div>
 
-                    <!-- قناة 2 (مع البروكسي) -->
-                    <div class="channel-card" data-stream-url="https://proxy.cors.sh/https://dokko1new.newkso.ru/dokko1/premium92/mono.m3u8" data-channel-name="beIN SPORTS 2 HD">
+                    <!-- قناة 2 -->
+                    <div class="channel-card" data-stream-url="ضع رابط البث m3u8 هنا" data-channel-name="beIN SPORTS 2 HD">
                         <img src="https://i.ibb.co/pZ4T9s3/bein2.png" alt="beIN 2" class="w-10 h-10 ml-3">
                         <span>beIN SPORTS 2 HD</span>
                     </div>
                     
-                    <!-- قناة 3 (تحتاج لرابط صالح مع بروكسي) -->
-                    <div class="channel-card" data-stream-url="ضع رابط البث هنا" data-channel-name="beIN SPORTS 3 HD">
+                    <!-- قناة 3 -->
+                    <div class="channel-card" data-stream-url="ضع رابط البث m3u8 هنا" data-channel-name="beIN SPORTS 3 HD">
                         <img src="https://i.ibb.co/z5pB0s6/bein3.png" alt="beIN 3" class="w-10 h-10 ml-3">
                         <span>beIN SPORTS 3 HD</span>
                     </div>
 
-                    <!-- قناة الأخبار (تحتاج لرابط صالح مع بروكسي) -->
-                    <div class="channel-card" data-stream-url="ضع رابط البث هنا" data-channel-name="beIN SPORTS الإخبارية">
+                    <!-- قناة الأخبار -->
+                    <div class="channel-card" data-stream-url="ضع رابط البث m3u8 هنا" data-channel-name="beIN SPORTS الإخبارية">
                         <img src="https://i.ibb.co/3cYmZKy/bein-news.png" alt="beIN News" class="w-10 h-10 ml-3">
                         <span>beIN SPORTS الإخبارية</span>
                     </div>
+                    
+                    <!-- يمكنك إضافة المزيد من القنوات هنا بنفس الطريقة -->
 
                 </div>
                  <!-- =========== مكان الإعلان الثاني (جانبي) =========== -->
+                 <!-- احذف الـ <span> والصق كود إعلانك هنا -->
                 <div class="ad-placeholder mt-6 bg-gray-700 h-64 flex items-center justify-center">
                     <span class="text-gray-400">ضع كود إعلان جانبي هنا</span>
                 </div>
@@ -123,22 +136,26 @@
     <!-- 2. استدعاء مكتبة jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- JavaScript مدمج هنا -->
+    <!-- ================ JavaScript مدمج هنا (بدلاً من ملف خارجي) ================ -->
     <script>
         $(document).ready(function() {
             const playerIframe = $('#video-iframe'); 
             const currentChannelName = $('#current-channel-name');
 
+            // وظيفة التعامل مع نقرة القناة
             $('.channel-card').on('click', function() {
                 const streamUrl = $(this).data('stream-url');
                 const channelName = $(this).data('channel-name');
 
-                if (streamUrl && streamUrl !== "ضع رابط البث هنا") {
+                if (streamUrl && streamUrl !== "ضع رابط البث m3u8 هنا") {
+                    // نقوم بإنشاء الرابط الجديد لصفحة المشغل مع تمرير رابط البث
                     const newIframeSrc = `player.html?stream=${encodeURIComponent(streamUrl)}`;
                     playerIframe.attr('src', newIframeSrc);
 
+                    // تحديث اسم القناة المعروضة
                     currentChannelName.text(`أنت تشاهد الآن: ${channelName}`);
                     
+                    // تحديث التنسيق لإظهار القناة النشطة
                     $('.channel-card').removeClass('active');
                     $(this).addClass('active');
                 } else {
@@ -147,13 +164,16 @@
                 }
             });
 
+            // اختيار القناة الأولى تلقائياً عند تحميل الصفحة (اختياري)
             if ($('.channel-card').length > 0) {
+                // نؤجل التشغيل قليلاً لضمان تحميل كل شيء
                 setTimeout(function() {
                     $('.channel-card').first().trigger('click');
                 }, 500);
             }
         });
     </script>
+    <!-- ====================================================================== -->
 
 </body>
 </html>
