@@ -3,95 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بث مباشر: ريال مدريد ضد برشلونة (سيرفرات Iframe) - Ballon TV Live</title>
-
-    <!-- ... (روابط الخطوط والأيقونات كما هي) ... -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-    <!-- الأنماط المخصصة (مع تعديلات بسيطة) -->
+    <title>مشغل بث مباشر</title>
+    
+    <!-- استايل لجعل المشغل يملأ الشاشة بالكامل -->
     <style>
-        body { background-color: #111827; font-family: 'Cairo', sans-serif; color: #E5E7EB; }
-        .player-area { position: relative; background-size: cover; background-position: center; border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; background-image: url('https://i.imgur.com/8i2B5zS.jpg'); }
-        .player-area::before { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; background-color: rgba(17, 24, 39, 0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 1rem; z-index: 1; }
-        .player-content { position: relative; z-index: 2; }
-
-        /* حاوية لجعل الـ iframe متجاوباً ويحافظ على نسبة 16:9 */
-        .iframe-container {
-            position: relative; overflow: hidden; width: 100%;
-            padding-top: 56.25%; /* النسبة 16:9 */
-            border-radius: 0.75rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            background: #000;
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #000;
         }
-        .iframe-container iframe {
-            position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            width: 100%; height: 100%; border: none;
-        }
-
-        /* تصميم أزرار السيرفرات (روابط) */
-        .server-link {
-            background-color: #374151; /* رمادي */
-            transition: all 0.2s ease-in-out;
-            display: block; text-align: center;
-        }
-        .server-link:hover { background-color: #4b5563; }
-        .server-link.active-server {
-            background-color: #eab308; /* أصفر لتناسب تصميمك */
-            color: #111827; font-weight: bold;
-            box-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
+        #player {
+            width: 100%;
+            height: 100%;
         }
     </style>
+    
+    <!-- 1. استدعاء مكتبة Clappr من CDN -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
 </head>
-<body class="antialiased">
+<body>
 
-    <div class="container mx-auto px-4 py-8">
-        <div class="player-area">
-            <div class="player-content">
-                <div class="match-details mb-4 text-center">
-                    <h1 class="text-3xl md:text-5xl font-black text-white drop-shadow-lg">ريال مدريد ضد برشلونة</h1>
-                    <p class="text-lg text-yellow-400 font-bold mt-1">الدوري الإسباني - الجولة 10</p>
-                </div>
-                
-                <!-- المشغل (Iframe) -->
-                <div class="iframe-container">
-                    <iframe name="player_iframe" id="player_iframe" src="https://rereyano.ru/player/4/12" scrolling="no" frameborder="0" allowfullscreen="true"></iframe>
-                </div>
-            </div>
-        </div>
+    <!-- 2. هذا هو العنصر الذي سيحتوي على المشغل (بدلاً من الـ iframe) -->
+    <div id="player"></div>
 
-        <!-- أزرار التحكم والسيرفرات -->
-        <div class="controls-bar bg-gray-800 p-4 rounded-lg shadow-lg mb-8">
-            <h3 class="text-white font-bold mb-3 text-lg">اختر سيرفر البث:</h3>
-            <!-- ======================================================= -->
-            <!--   !! الخطوة 1: أضف روابط السيرفرات الخاصة بك هنا !!      -->
-            <!-- ======================================================= -->
-            <div id="server-list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                <a href="https://windnew.newkso.ru/wind/premium324/mono.m3u8" target="player_iframe" class="server-link active-server text-white py-2 px-4 rounded-md">السيرفر 1</a>
-                <a href="https://sportzonline.si/channels/hd/hd5.php" target="player_iframe" class="server-link text-white py-2 px-4 rounded-md">السيرفر 2</a>
-                <a href="https://cdn18.koora10.live/chtv/ch1.php" target="player_iframe" class="server-link text-white py-2 px-4 rounded-md">السيرفر 3</a>
-                <a href="https://rereyano.ru/player/4/87" target="player_iframe" class="server-link text-white py-2 px-4 rounded-md">السيرفر 4</a>
-                <!-- يمكنك إضافة المزيد من السيرفرات بنفس الطريقة -->
-            </div>
-        </div>
-
-        <!-- ... (بقية الصفحة كما هي) ... -->
-    </div>
-
-    <!-- JavaScript لجعل الزر النشط يتغير (لتحسين تجربة المستخدم) -->
     <script>
-        const serverLinks = document.querySelectorAll('#server-list a.server-link');
-
-        serverLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                // إزالة كلاس "النشط" من جميع الأزرار
-                serverLinks.forEach(l => l.classList.remove('active-server'));
-                // إضافة كلاس "النشط" للزر الذي تم الضغط عليه
-                this.classList.add('active-server');
-            });
+        // 3. إعداد وتشغيل مشغل Clappr
+        var player = new Clappr.Player({
+            // الرابط الجديد الذي تريد تشغيله
+            source: 'http://platform.topuphost.com:8577/live/alfajr4.stream/playlist.m3u8',
+            
+            // تحديد العنصر الذي سيحتوي على المشغل
+            parentId: '#player',
+            
+            // خيارات لجعل المشغل يملأ المساحة المتاحة ويعمل تلقائياً
+            width: '100%',
+            height: '100%',
+            autoPlay: true,
+            
+            // إعدادات خاصة بـ HLS لتحسين الأداء
+            hlsjsConfig: {
+              enableWorker: true
+            }
         });
     </script>
 
