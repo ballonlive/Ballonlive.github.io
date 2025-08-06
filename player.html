@@ -3,49 +3,79 @@
 <head>
     <meta charset="utf-8">
     <title>Clappr Player</title>
-    <!-- 1. لا نحتاج لملف CSS منفصل، Clappr يدمج التصميم -->
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
-        #player { width: 100%; height: 100%; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; color: white; display: flex; align-items: center; justify-content: center; font-family: sans-serif; }
+        #player-container { width: 100%; height: 100%; }
+        /* رسالة الخطأ في حال لم يتم توفير رابط */
+        #error-message { font-size: 1.2em; }
     </style>
 </head>
 <body>
 
-    <!-- 2. هذا هو العنصر الذي سيحتوي على المشغل -->
-    <div id="player"></div>
+    <div id="player-container">
+        <div id="error-message" style="display: none;">
+            عفواً، لم يتم توفير رابط بث.
+        </div>
+    </div>
 
-    <!-- 3. استدعاء مكتبة Clappr الرئيسية -->
+    <!-- 1. استدعاء مكتبة Clappr الرئيسية -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
     
-    <!-- 4. استدعاء الإضافة اللازمة لتشغيل HLS (روابط m3u8) -->
+    <!-- 2. استدعاء الإضافة اللازمة لتشغيل HLS (روابط m3u8) -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr-hlsjs-playback@latest/dist/hlsjs-playback.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const playerContainer = document.getElementById('player-container');
+            const errorMessageDiv = document.getElementById('error-message');
+
             // جلب رابط البث من الـ URL
             const params = new URLSearchParams(window.location.search);
             const streamUrl = params.get('stream');
 
             if (streamUrl) {
-                // تهيئة مشغل Clappr
-                var player = new Clappr.Player({
-                    source: streamUrl,        // رابط البث
-                    parentId: '#player',      // العنصر الذي سيحتوي على المشغل
-                    width: '100%',
-                    height: '100%',
-                    autoPlay: true,           // محاولة التشغيل التلقائي
-                    
-                    // تحديد الإضافة التي ستستخدم لتشغيل HLS
-                    plugins: {
-                        playback: [HlsjsPlayback]
-                    },
-                    // إعدادات خاصة بـ HLS.js لتحسين الأداء (اختياري)
-                    hlsjsConfig: {
-                        maxMaxBufferLength: 30,
-                    },
-                });
+                try {
+                    // تهيئة مشغل Clappr بالطريقة الصحيحة
+                    var player = new Clappr.Player({
+                        source: streamUrl,
+                        parentId: '#player-container', // نربط المشغل بالعنصر الحاوي
+                        width: '100%',
+                        height: '100%',
+                        autoPlay: true,
+                        
+                        // هذه هي الطريقة الأكثر ضماناً لتمرير الإضافات
+                        // Clappr سيستخدمها تلقائياً عند الحاجة
+                        plugins: [HlsjsPlayback], 
+                        
+                        hlsjsConfig: {
+                            // إعدادات لتحسين الأداء
+                            maxMaxBufferLength: 30,
+                            enableWorker: true, // استخدام worker لتحسين الأداء على المتصفحات التي تدعم ذلك
+                        },
+
+                        // إعدادات إضافية للمشغل
+                        playback: {
+                          hls: true, // تأكيد أننا نعمل مع HLS
+                        },
+
+                        // ترجمة بعض أزرار التحكم للعربية (اختياري)
+                        strings: {
+                            'live': 'مباشر',
+                            'back_to_live': 'العودة للبث المباشر',
+                            'playback_rate': 'سرعة التشغيل',
+                            'unmute': 'إلغاء كتم الصوت',
+                            'mute': 'كتم الصوت',
+                            'fullscreen': 'ملء الشاشة',
+                            'exit_fullscreen': 'الخروج من ملء الشاشة'
+                        }
+                    });
+                } catch (e) {
+                    console.error("Clappr initialization failed:", e);
+                    playerContainer.innerHTML = `<div id="error-message">حدث خطأ أثناء تهيئة المشغل: ${e.message}</div>`;
+                }
             } else {
-                console.error("No stream URL provided to player!");
+                console.error("No stream URL provided!");
+                errorMessageDiv.style.display = 'block'; // إظهار رسالة الخطأ
             }
         });
     </script>
