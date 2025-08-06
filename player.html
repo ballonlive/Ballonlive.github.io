@@ -6,16 +6,13 @@
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; color: white; display: flex; align-items: center; justify-content: center; font-family: sans-serif; }
         #player-container { width: 100%; height: 100%; }
-        /* رسالة الخطأ في حال لم يتم توفير رابط */
-        #error-message { font-size: 1.2em; }
+        #message { font-size: 1.2em; padding: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="player-container">
-        <div id="error-message" style="display: none;">
-            عفواً، لم يتم توفير رابط بث.
-        </div>
+        <div id="message">جاري التحميل...</div>
     </div>
 
     <!-- 1. استدعاء مكتبة Clappr الرئيسية -->
@@ -25,59 +22,52 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr-hlsjs-playback@latest/dist/hlsjs-playback.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // سنضع كل الكود داخل دالة لضمان الترتيب
+        function initializePlayer() {
             const playerContainer = document.getElementById('player-container');
-            const errorMessageDiv = document.getElementById('error-message');
+            const messageDiv = document.getElementById('message');
 
             // جلب رابط البث من الـ URL
             const params = new URLSearchParams(window.location.search);
             const streamUrl = params.get('stream');
 
             if (streamUrl) {
+                // الآن فقط، بعد التأكد من تحميل كل شيء، نقوم بالتهيئة
                 try {
-                    // تهيئة مشغل Clappr بالطريقة الصحيحة
+                    // إخفاء رسالة التحميل
+                    if(messageDiv) messageDiv.style.display = 'none';
+
                     var player = new Clappr.Player({
                         source: streamUrl,
-                        parentId: '#player-container', // نربط المشغل بالعنصر الحاوي
+                        parentId: '#player-container',
                         width: '100%',
                         height: '100%',
                         autoPlay: true,
                         
-                        // هذه هي الطريقة الأكثر ضماناً لتمرير الإضافات
-                        // Clappr سيستخدمها تلقائياً عند الحاجة
+                        // استخدام الإضافة بعد التأكد من تحميلها
                         plugins: [HlsjsPlayback], 
                         
                         hlsjsConfig: {
-                            // إعدادات لتحسين الأداء
                             maxMaxBufferLength: 30,
-                            enableWorker: true, // استخدام worker لتحسين الأداء على المتصفحات التي تدعم ذلك
                         },
-
-                        // إعدادات إضافية للمشغل
-                        playback: {
-                          hls: true, // تأكيد أننا نعمل مع HLS
-                        },
-
-                        // ترجمة بعض أزرار التحكم للعربية (اختياري)
-                        strings: {
-                            'live': 'مباشر',
-                            'back_to_live': 'العودة للبث المباشر',
-                            'playback_rate': 'سرعة التشغيل',
-                            'unmute': 'إلغاء كتم الصوت',
-                            'mute': 'كتم الصوت',
-                            'fullscreen': 'ملء الشاشة',
-                            'exit_fullscreen': 'الخروج من ملء الشاشة'
-                        }
                     });
+
                 } catch (e) {
                     console.error("Clappr initialization failed:", e);
-                    playerContainer.innerHTML = `<div id="error-message">حدث خطأ أثناء تهيئة المشغل: ${e.message}</div>`;
+                    playerContainer.innerHTML = `<div id="message">حدث خطأ أثناء تهيئة المشغل: ${e.message}</div>`;
                 }
+
             } else {
                 console.error("No stream URL provided!");
-                errorMessageDiv.style.display = 'block'; // إظهار رسالة الخطأ
+                if(messageDiv) messageDiv.textContent = 'عفواً، لم يتم توفير رابط بث صالح.';
             }
-        });
+        }
+
+        // --- الجزء الأهم ---
+        // لا تقم بتشغيل الكود مباشرةً
+        // انتظر حتى يتم تحميل نافذة المتصفح بالكامل وجميع الموارد (بما في ذلك ملفات الـ JS)
+        window.onload = initializePlayer;
+
     </script>
 </body>
 </html>
