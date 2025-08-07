@@ -8,13 +8,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <!-- ======== مكتبات Shaka Player فقط ======== -->
+  <!-- مكتبات Shaka Player -->
   <link rel="stylesheet" type="text/css" href="https://shaka-player-demo.appspot.com/dist/controls.css">
   <script src="https://shaka-player-demo.appspot.com/dist/shaka-player.ui.js"></script>
-  <!-- ======================================== -->
 
   <style>
-    /* تم الإبقاء على نفس التصميم الجميل الخاص بك */
+    /* CSS يبقى كما هو */
     :root {
       --font-family: 'Tajawal', sans-serif;
       --bg-light: #f5f5f7; --surface-light: #ffffff; --text-primary-light: #1d1d1f; --text-secondary-light: #6e6e73; --accent-light: #0071e3; --border-light: #d2d2d7;
@@ -28,7 +27,7 @@
     }
     body { margin: 0; padding: 0; font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-primary); user-select: none; transition: background-color 0.3s, color 0.3s; }
     a { text-decoration: none; color: inherit; }
-    .header-container { position: sticky; top: 0; z-index: 1000; background-color: var(--surface-color); padding: 15px 20px; box-shadow: 0 2px 10px var(--shadow-color); transition: background-color 0.3s, box-shadow 0.3s; }
+    .header-container { position: sticky; top: 0; z-index: 1000; background-color: var(--surface-color); padding: 15px 20px; box-shadow: 0 2px 10px var(--shadow-color); }
     header { display: flex; justify-content: space-between; align-items: center; }
     header h1 { margin: 0; font-size: 22px; font-weight: 700; color: var(--accent-color); }
     .header-icon { font-size: 24px; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; }
@@ -50,8 +49,6 @@
       height: 40px; display: flex; align-items: center; justify-content: center; text-align: center;
       font-size: 12px; font-weight: 700; padding: 0 5px; color: var(--text-primary);
     }
-    
-    /* نافذة المشغل الوحيدة الآن */
     .player-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background-color: rgba(0, 0, 0, 0.85);
@@ -59,30 +56,20 @@
       backdrop-filter: blur(5px);
     }
     .player-modal-content {
-      width: 90%; max-width: 960px;
-      height: auto;
+      width: 90%; max-width: 960px; height: auto;
       background-color: #000; position: relative;
-      border-radius: 10px; overflow: hidden;
-      display: flex; flex-direction: column;
+      border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
     }
     #channel-name-modal {
-        background-color: var(--surface-color);
-        color: var(--text-primary);
-        font-size: 16px;
-        padding: 10px 15px;
-        margin: 0;
-        text-align: center;
+        background-color: var(--surface-color); color: var(--text-primary);
+        font-size: 16px; padding: 10px 15px; margin: 0; text-align: center;
     }
     .player-modal .close-player-btn {
-      position: absolute; top: -35px; right: 0;
-      font-size: 30px; color: white; cursor: pointer;
-      background: none; border: none; z-index: 2001;
+      position: absolute; top: -35px; right: 0; font-size: 30px;
+      color: white; cursor: pointer; background: none; border: none; z-index: 2001;
     }
     .player-modal video {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 16 / 9;
-        background-color: #000;
+        width: 100%; height: auto; aspect-ratio: 16 / 9; background-color: #000;
     }
   </style>
 </head>
@@ -99,7 +86,8 @@
   <main>
     <section id="live-channels">
       <div id="items-grid" class="items-grid">
-        <p id="loading-message">جاري تحميل القنوات...</p>
+        <!-- رسالة الانتظار الأولية -->
+        <p id="loading-message">جاري تهيئة المشغل...</p>
       </div>
     </section>
   </main>
@@ -110,7 +98,6 @@
     <a href="#">سياسة الخصوصية</a>
   </div>
 
-  <!-- نافذة مشغل Shaka الوحيدة -->
   <div id="shakaPlayerModal" class="player-modal">
     <div class="player-modal-content">
         <button class="close-player-btn" onclick="closeShakaPlayer()">×</button>
@@ -140,36 +127,39 @@
     const channelNameTitle = document.getElementById('channel-name-modal');
     let shakaPlayer;
 
-    // تهيئة المشغل عند تحميل الصفحة
-    document.addEventListener('shaka-ui-loaded', () => {
-      const videoElement = document.getElementById('shaka-video-player');
-      const ui = videoElement['ui'];
-      shakaPlayer = ui.getPlayer();
-      
-      ui.configure({
-        'controlPanelElements': ['rewind', 'play_pause', 'fast_forward', 'time_and_duration', 'spacer', 'volume', 'fullscreen', 'overflow_menu'],
-        'overflowMenuButtons': ['quality', 'language', 'picture_in_picture', 'playback_rate'],
-      });
+    // **التغيير الجوهري هنا**
+    // لن نقوم بتحميل القنوات إلا بعد أن يصبح المشغل جاهزًا
+    document.addEventListener('shaka-ui-loaded', initApp);
 
-      shakaPlayer.addEventListener("error", (e) => {
-        console.error('Shaka Player Error:', e.detail);
-        alert("فشل تشغيل القناة. قد يكون الرابط لا يعمل.");
-        closeShakaPlayer();
-      });
-    });
+    function initApp() {
+        // الخطوة 1: تهيئة مشغل Shaka
+        const videoElement = document.getElementById('shaka-video-player');
+        const ui = videoElement['ui'];
+        shakaPlayer = ui.getPlayer();
+      
+        ui.configure({
+            'controlPanelElements': ['rewind', 'play_pause', 'fast_forward', 'time_and_duration', 'spacer', 'volume', 'fullscreen', 'overflow_menu'],
+            'overflowMenuButtons': ['quality', 'language', 'picture_in_picture', 'playback_rate'],
+        });
+
+        shakaPlayer.addEventListener("error", (e) => {
+            console.error('Shaka Player Error:', e.detail);
+            // لا نعرض تنبيهًا هنا، يمكن أن يكون الخطأ بسيطًا والمستخدم يستطيع المحاولة مرة أخرى
+        });
+        
+        // الخطوة 2: الآن بعد أن أصبح المشغل جاهزًا، نقوم بتحميل وعرض القنوات
+        loadAndDisplayChannels();
+    }
 
     // دالة لتشغيل القناة المحددة
     function playInShaka(streamUrl, channelName) {
-      if (!shakaPlayer) {
-        alert("المشغل لم يتم تحميله بعد، يرجى المحاولة بعد لحظات.");
-        return;
-      }
-      
       channelNameTitle.textContent = channelName;
       shakaModal.style.display = 'flex';
       
       shakaPlayer.load(streamUrl).catch((e) => {
         console.error('Error loading stream:', e);
+        alert("فشل تشغيل القناة. قد يكون الرابط لا يعمل.");
+        closeShakaPlayer();
       });
     }
 
@@ -181,10 +171,11 @@
       }
     }
 
-    // --- جلب وعرض القنوات من ملف M3U ---
-    $(document).ready(function() {
+    // --- دالة جلب وعرض القنوات من ملف M3U ---
+    function loadAndDisplayChannels() {
       const grid = $('#items-grid');
       const loadingMessage = $('#loading-message');
+      loadingMessage.text('جاري تحميل القنوات...'); // تحديث الرسالة
       const playlistUrl = "playlist.m3u";
 
       $.get(playlistUrl, function(data) {
@@ -198,9 +189,7 @@
 
             if (streamUrl && streamUrl.startsWith('http')) {
               let name = infoLine.split(',').pop();
-              // التأكد من أن اسم القناة لا يكسر السكريبت إذا احتوى على علامات اقتباس
               const safeName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
               let logoMatch = infoLine.match(/tvg-logo="([^"]+)"/);
               let logoUrl = logoMatch ? logoMatch[1] : 'https://via.placeholder.com/200x150/1e1e1e/f5f5f7?text=TV';
 
@@ -216,7 +205,7 @@
       }).fail(function() {
         loadingMessage.text('فشل تحميل ملف playlist.m3u. تأكد من وجوده في نفس المجلد.');
       });
-    });
+    }
   </script>
 </body>
 </html>
